@@ -1,58 +1,68 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const QRScanner = () => {
+const URLChecker = () => {
   const [input, setInput] = useState("");
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
   const checkURL = async () => {
-    if (!input.trim()) {
-      setResult("❌ Please enter URL.");
-      return;
-    }
+    if (!input.trim()) return setResult("❌ Please enter a URL");
 
     setLoading(true);
+    setResult("");
+
     try {
       const res = await axios.post("http://localhost:8000/api/verify", {
-        qrData: input, // backend still expects 'qrData'
+        qrData: input,
       });
-      setResult(res.data.valid ? "✅ Genuine URL" : "❌ Fake URL");
+      setResult(res.data.valid ? "✅ Safe URL" : "⚠️ Unsafe or Fake URL");
     } catch (err) {
-      setResult("⚠️ Server error. Try again later.");
+      setResult("❌ Server Error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4">
-      <div className="bg-gray-900 border border-gray-700 text-white rounded-lg shadow-2xl p-8 w-full max-w-md text-center">
-        <h1 className="text-3xl font-bold text-cyan-400 mb-6">🕵️‍♀️ Fake URL Detector</h1>
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="bg-gray-800 shadow-xl rounded-lg p-8 w-full max-w-lg text-white">
+        <h1 className="text-3xl font-bold mb-6 text-center text-blue-400">
+          🔍 URL Verification Tool
+        </h1>
 
         <input
           type="text"
-          placeholder="Paste your URL here..."
+          placeholder="Paste URL here..."
+          className="w-full px-4 py-3 mb-4 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full px-4 py-3 text-white bg-gray-800 border border-gray-600 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-cyan-400"
         />
 
         <button
           onClick={checkURL}
-          className="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-300"
+          disabled={loading}
+          className={`w-full ${
+            loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+          } transition duration-200 text-white font-semibold py-2 px-4 rounded-md`}
         >
-          {loading ? "Checking..." : "Verify URL"}
+          {loading ? "Verifying..." : "Verify URL"}
         </button>
 
-        {result && (
+        {loading && (
+          <div className="mt-4 flex justify-center">
+            <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+
+        {result && !loading && (
           <div
-            className={`mt-6 text-lg font-semibold ${
+            className={`mt-4 text-center text-lg font-semibold ${
               result.includes("✅")
                 ? "text-green-400"
-                : result.includes("❌")
-                ? "text-red-400"
-                : "text-yellow-400"
+                : result.includes("⚠️")
+                ? "text-yellow-400"
+                : "text-red-400"
             }`}
           >
             {result}
@@ -63,6 +73,7 @@ const QRScanner = () => {
   );
 };
 
-export default QRScanner;
+export default URLChecker;
+
 
 

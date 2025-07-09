@@ -3,7 +3,7 @@ import QRScanner from "./components/QRScanner"; // adjust path if needed
 
 function App() {
   return (
-    <div className="App">
+    <div >
       <QRScanner />
     </div>
   );
