@@ -1,15 +1,10 @@
+
+
 import React from "react";
-import QRScanner from "./components/QRScanner"; // adjust path if needed
+import URLChecker from "./components/URLChecker";
 
 function App() {
-  return (
-    <div >
-      <QRScanner />
-    </div>
-  );
+  return <URLChecker />;
 }
 
 export default App;
-
-
-
